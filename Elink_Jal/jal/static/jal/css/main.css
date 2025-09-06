@@ -1,0 +1,106 @@
+/* ===== Base Page Setup ===== */
+body {
+    display: flex;
+    flex-direction: column;
+    font-family: 'Segoe UI', sans-serif;
+    line-height: 1.5;
+    min-height: 100vh;
+    background-color: #f2f5fa; /* keep light background for contrast */
+    margin: 0;
+}
+
+/* ===== Main Card/Panel ===== */
+.main {
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(10, 35, 80, 0.3); /* dark blue shadow */
+    padding: 20px 30px;
+    width: 100%;
+   
+    margin: 40px auto;
+}
+
+/* ===== Grid Form Layout (Two Columns: Label + Input) ===== */
+.container2 {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    grid-auto-rows: minmax(50px, auto);
+    gap: 15px 30px;
+    padding: 20px 10px;
+}
+
+/* ===== Header & Logo ===== */
+.img {
+    display: block;
+    margin: 20px auto 10px;
+    width: 100%;
+}
+
+.upper {
+    background-color: #ffffff; /* darkish blue */
+    padding: 10px;
+}
+
+.head1 {
+    background-color: #0D78BE; /* slightly lighter dark blue */
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0px 20px;
+    box-sizing: border-box;
+    color: white; /* text in header white for contrast */
+}
+
+/* ===== Required Field Asterisk ===== */
+.required-field::before {
+    content: "*";
+    color: #ff0000; /* very dark blue */
+    margin-left: 4px;
+}
+
+/* ===== Inputs and Textareas ===== */
+input[type="text"],
+input[type="tel"],
+input[type="email"],
+select,
+textarea {
+    width: 100%;
+    padding: 8px 10px;
+    font-size: 14px;
+    border: 1px solid #0b2e66; /* dark blue border */
+    border-radius: 4px;
+    box-sizing: border-box;
+    transition: border-color 0.3s;
+    background-color: white;
+    color: #0b2e66; /* text dark blue */
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    border-color: #164a99; /* highlight on focus */
+    outline: none;
+}
+
+/* ===== Buttons ===== */
+/* ===== Horizontal Line Styling ===== */
+hr {
+    border: none;
+    height: 2px;
+    background-color: #0b2e66; /* dark blue */
+    margin: 20px 0;
+}
+
+/* ===== Responsive Adjustments ===== */
+@media screen and (max-width: 768px) {
+    .container2 {
+        grid-template-columns: 1fr;
+    }
+
+    .head1 {
+        flex-direction: column;
+        gap: 10px;
+        align-items: flex-start;
+    }
+}

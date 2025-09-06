@@ -1,0 +1,275 @@
+.upper {
+    display: flex;
+    flex-direction: column;
+    border: 2px solid #1175B7;
+}
+
+.top-row {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.img img,
+.account-dropdown > button img {
+    height: 60px;
+}
+
+.page-title {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.account-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.account-dropdown-content {
+    display: none;
+    position: absolute;
+    right: 0;
+    background-color: rgba(255, 255, 255, 0.9);
+    border: 1px solid #ccc;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    min-width: 200px;
+    padding: 0;
+    list-style: none;
+    z-index: 1000;
+    border-radius: 5px;
+}
+
+.account-dropdown-content a {
+    display: block;
+    padding: 12px 16px;
+    text-decoration: none;
+    color: #333;
+    font-size: 16px;
+    background-color: transparent;
+    cursor: pointer;
+    border-bottom: 1px solid #eee;
+}
+
+.account-dropdown-content a:last-child {
+    border-bottom: none;
+}
+
+.account-dropdown-content a:hover {
+    background-color: #f5f5f5;
+    color: #333;
+}
+
+.account-dropdown:hover .account-dropdown-content {
+    display: block;
+}
+
+.account-dropdown button {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    display: inline-block;
+}
+
+.account-dropdown button img {
+    height: 60px;
+    width: auto;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px;
+    border-radius: 10px;
+    background-color: #F2F5FA;
+    max-width: 600px;
+    width: 100%;
+    position: relative;
+}
+
+.form-wrapper {
+    display: flex;
+    justify-content: center;
+    padding: 30px 0;
+    width: 100%;
+}
+
+.operator-form .form-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(100px, 1fr));
+    gap: 20px;
+    width: 100%;
+    margin-bottom: 50px;
+    text-align: center;
+}
+
+.operator-form form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px;
+    border-radius: 10px;
+    background-color: #F2F5FA;
+    max-width: 1200px;
+    width: 100%;
+    position: relative;
+}
+
+.operator-form .uniform-input {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.operator-form form button[type="submit"] {
+    margin-top: 20px;
+    width: auto;
+    align-self: center;
+    padding: 10px 20px;
+    font-size: 20px;
+    cursor: pointer;
+    background-color: rgb(0, 2, 104);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    transition: background-color 0.5s;
+}
+
+.location-form .form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    width: 100%;
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.location-form label {
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.location-form .uniform-input,
+.location-form .uniform-dropdown {
+    width: 100%;
+    padding: 8px;
+    box-sizing: border-box;
+}
+
+.location-form .uniform-input {
+    margin-bottom: 15px;
+}
+
+.uniform-input,
+.uniform-dropdown {
+    width: 100%;
+    padding: 8px;
+    box-sizing: border-box;
+}
+
+.sub_location-form .form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 100px);
+    gap: 10px;
+    width: 100%;
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+button[type="submit"] {
+    padding: 10px 20px;
+    font-size: 20px;
+    cursor: pointer;
+    background-color: rgb(0, 2, 104);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    transition: background-color 0.5s;
+    margin-top: 20px;
+}
+
+button[type="submit"]:hover {
+    background-color: #1f6690;
+}
+
+hr {
+    height: 2px;
+    background-color: #1175B7;
+    border: none;
+}
+
+.custom-dropdown {
+    position: relative;
+}
+
+.custom-dropdown .dropdown-content {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 999;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.1);
+    min-width: 250px;
+    box-sizing: border-box;
+    overflow: hidden;
+    padding: 0;
+}
+
+.custom-dropdown.show .dropdown-content {
+    display: block;
+}
+
+form button[type="submit"] {
+    margin-top: 20px;
+    width: auto;
+    align-self: center;
+    padding: 10px 20px;
+    font-size: 20px;
+    cursor: pointer;
+    background-color: rgb(0, 2, 104);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    transition: background-color 0.5s;
+}
+.uniform-button {
+  display: flex !important;          /* use flex to align contents inside */
+  align-items: center;               /* vertically center content */
+  justify-content: center;           /* horizontally center content */
+  width: 200px;
+  height: 45px;
+  font-size: 18px;
+  background-color: rgb(0, 2, 104);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  text-decoration: none;
+  cursor: pointer;
+  margin: 0;                        /* reset margin */
+  padding: 0;                       /* reset padding */
+  line-height: 1;                   /* avoid extra height */
+  box-sizing: border-box;
+  transition: background-color 0.3s;
+}
+
+.uniform-button:hover {
+    background-color: #1f6690;
+}
+
+
+
+.centered-button {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+
+.uniform-button:hover {
+    background-color: #1f6690;
+}

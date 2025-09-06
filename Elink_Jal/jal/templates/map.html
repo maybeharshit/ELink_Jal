@@ -1,0 +1,307 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Map{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'jal/css/upper.css' %}">
+<div class="upper">
+  <div class="top-row">
+    <div class="img">
+      <img src="{% static 'jal/images/full_logo.png' %}" alt="Logo">
+    </div>
+    <div class="page-title">
+      <h2 style='color: #1175B7;'>Smart Water System</h2>
+    </div>
+    <div class="account-dropdown">
+      <button><img src="{% static 'jal/images/icon.png' %}" alt="Account Icon"></button>
+      <div class="account-dropdown-content">
+        <a href="{% url 'accountdetails' %}">My Profile</a>
+        <a href="{% url 'changepassword' %}">Change Password</a>
+        <a href="{% url 'Log_out' %}">Logout</a>
+      </div>
+    </div>
+  </div>
+</div>
+<style>
+  #map {
+    width: 100%;
+    height: 650px;
+  }
+</style>
+<hr>
+<div id="map"></div>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+  const map = L.map('map').setView([18.64031, 73.43055], 11);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap contributors'
+  }).addTo(map);
+
+  var equipmentLine = null;
+
+  function drawEquipmentLine(equipmentList) {
+  if (equipmentLine) {
+    map.removeLayer(equipmentLine);
+    equipmentLine = null;
+  }
+
+  if (equipmentList.length >= 2) {
+    const group = L.layerGroup();
+    const source = equipmentList.find(eq => eq.eiq === 1);
+    const targets = equipmentList.filter(eq => eq.eiq !== 1);
+
+    function calculateArrowPoints(start, end, size = 0.0005, angleDeg = 30, position = 0.5) {
+      const toRad = Math.PI / 180;
+      const angle = angleDeg * toRad;
+
+      const dx = end[1] - start[1];
+      const dy = end[0] - start[0];
+      const lineAngle = Math.atan2(dy, dx);
+
+      const arrowLat = start[0] + dy * position;
+      const arrowLng = start[1] + dx * position;
+
+      const leftWingAngle = lineAngle + Math.PI - angle;
+      const rightWingAngle = lineAngle + Math.PI + angle;
+
+      const leftPoint = [
+        arrowLat + size * Math.sin(leftWingAngle),
+        arrowLng + size * Math.cos(leftWingAngle)
+      ];
+      const rightPoint = [
+        arrowLat + size * Math.sin(rightWingAngle),
+        arrowLng + size * Math.cos(rightWingAngle)
+      ];
+
+      return { arrowPoint: [arrowLat, arrowLng], leftPoint, rightPoint };
+    }
+
+    if (source) {
+      targets.forEach(target => {
+        const line = L.polyline(
+          [
+            [source.elat, source.elng],
+            [target.elat, target.elng]
+          ],
+          {
+            color: 'blue',
+            weight: 3
+          }
+        ).addTo(map);
+
+        const { arrowPoint, leftPoint, rightPoint } = calculateArrowPoints(
+          [source.elat, source.elng],
+          [target.elat, target.elng],
+          0.0007,
+          30,
+          0.5
+        );
+
+        const leftWing = L.polyline([leftPoint, arrowPoint], {
+          color: 'blue',
+          weight: 3
+        }).addTo(map);
+
+        const rightWing = L.polyline([rightPoint, arrowPoint], {
+          color: 'blue',
+          weight: 3
+        }).addTo(map);
+
+        group.addLayer(line);
+        group.addLayer(leftWing);
+        group.addLayer(rightWing);
+      });
+    } else {
+      for (let i = 0; i < equipmentList.length - 1; i++) {
+        const a = equipmentList[i];
+        const b = equipmentList[i + 1];
+        const line = L.polyline(
+          [
+            [a.elat, a.elng],
+            [b.elat, b.elng]
+          ],
+          {
+            color: 'blue',
+            weight: 3
+          }
+        ).addTo(map);
+        group.addLayer(line);
+      }
+    }
+
+    equipmentLine = group;
+    equipmentLine.addTo(map);
+  }
+}
+
+</script>
+
+<div class="form-grid-2">
+  <div>
+    <label for="location">Location:<span class="required-field"></span></label>
+  </div>
+  <div>
+    <select name="location" id="location" style="width: 230px;" required>
+      {% for l in ls %}
+      <option value="{{ l.location_id }}" data-lat="{{ l.loc_latitude }}" data-lng="{{ l.loc_longitude }}">
+        {{ l.location_name }}
+      </option>
+      {% endfor %}
+    </select>
+  </div>
+  <div>
+    <label for="sub_location">Sub Location:<span class="required-field"></span></label>
+  </div>
+  <div>
+    <select id="sub_location" name="sub_location" required disabled>
+      <option value="" disabled selected>Select Sub Location</option>
+    </select>
+  </div>
+
+  <script>
+    const allowedSubLocationIds = {{ avsl| safe }};
+    const allSublocations = [
+      {% for sl in sls %}{
+      id: {{ sl.sub_location_id }},
+      name: "{{ sl.sub_location_name }}",
+      location_id: {{ sl.location_id }},
+      s_lat: {{ sl.s_loc_latitude }},
+      s_lng: {{ sl.s_loc_longitude }}
+    },
+    {% endfor %}
+  ];
+
+    const locationDropdown = document.getElementById('location');
+    const subLocationDropdown = document.getElementById('sub_location');
+    var sublocationmarkers = [];
+    var equipmentmarkers = [];
+
+    window.addEventListener('DOMContentLoaded', () => {
+      if (locationDropdown.value) {
+        locationDropdown.dispatchEvent(new Event('change'));
+      }
+    });
+
+    map.on('zoomend', () => {
+      const currentZoom = map.getZoom();
+      if (currentZoom < 14) {
+        equipmentmarkers.forEach(m => map.removeLayer(m));
+        sublocationmarkers.forEach(m => {
+          if (!map.hasLayer(m)) {
+            m.addTo(map);
+          }
+        });
+        if (equipmentLine) {
+          map.removeLayer(equipmentLine);
+          equipmentLine = null;
+        }
+      } else {
+        sublocationmarkers.forEach(m => {
+          if (map.hasLayer(m)) {
+            map.removeLayer(m);
+          }
+        });
+      }
+    });
+
+    locationDropdown.addEventListener('change', function () {
+      sublocationmarkers.forEach(m => map.removeLayer(m));
+      sublocationmarkers = [];
+      subLocationDropdown.innerHTML = '<option value="" disabled selected>Select Sub Location</option>';
+      const selectedLocationId = parseInt(this.value);
+      if (!isNaN(selectedLocationId)) {
+        const filteredSublocations = allSublocations.filter(sl => sl.location_id === selectedLocationId);
+        const usersublocations = filteredSublocations.filter(sl => allowedSubLocationIds.includes(sl.id));
+        usersublocations.forEach(sl => {
+          const option = document.createElement('option');
+          option.value = sl.id;
+          option.textContent = sl.name;
+          subLocationDropdown.appendChild(option);
+          const marker = L.marker([sl.s_lat, sl.s_lng]).addTo(map);
+          sublocationmarkers.push(marker);
+          marker.on('click', () => {
+            equipmentmarkers.forEach(m => map.removeLayer(m));
+            equipmentmarkers = [];
+            if (equipmentLine) {
+              map.removeLayer(equipmentLine);
+              equipmentLine = null;
+            }
+            map.setView([sl.s_lat, sl.s_lng], 15);
+            map.removeLayer(marker);
+            const equipments = [
+              {% for eq in equiploc %}
+              {
+                id: {{ eq.id }},
+                eiq: {{ eq.equipment_id }},
+                esl: {{ eq.sub_location_id }},
+                elat: {{ eq.equip_latitude }},
+                elng: {{ eq.equip_longitude }},
+                eicon: "{% for eqp in equip %}{% if eqp.equipment_id == eq.equipment_id %}{{ eqp.equip_icon_image_name }}{% endif %}{% endfor %}?v={{ timestamp }}",
+                ename: "{% for eqp in equip %}{% if eqp.equipment_id == eq.equipment_id %}{{ eqp.equipment_name }}{% endif %}{% endfor %}"
+              },
+              {% endfor %}
+            ];
+            const filteredEquipment = equipments.filter(eq => eq.esl === sl.id);
+            filteredEquipment.forEach(eb => {
+              const myIcon = L.icon({
+                iconUrl: eb.eicon,
+                iconSize: [40, 40]
+              });
+              const equipmentmarker = L.marker([eb.elat, eb.elng], { icon: myIcon }).addTo(map);
+              equipmentmarkers.push(equipmentmarker);
+            });
+            drawEquipmentLine(filteredEquipment);
+          });
+        });
+        subLocationDropdown.disabled = usersublocations.length === 0;
+        const selectedOption = this.options[this.selectedIndex];
+        const latitude = parseFloat(selectedOption.getAttribute('data-lat'));
+        const longitude = parseFloat(selectedOption.getAttribute('data-lng'));
+        if (latitude && longitude) {
+          map.setView([latitude, longitude], 12);
+        }
+      }
+    });
+
+    subLocationDropdown.addEventListener('change', function () {
+      const selectedSubId = parseInt(this.value);
+      if (isNaN(selectedSubId)) return;
+      equipmentmarkers.forEach(m => map.removeLayer(m));
+      equipmentmarkers = [];
+      if (equipmentLine) {
+        map.removeLayer(equipmentLine);
+        equipmentLine = null;
+      }
+      const selectedSub = allSublocations.find(sl => sl.id === selectedSubId);
+      if (!selectedSub) return;
+      map.setView([selectedSub.s_lat, selectedSub.s_lng], 15);
+      const equipments = [
+        {% for eq in equiploc %}
+        {
+          id: {{ eq.id }},
+          eiq: {{ eq.equipment_id }},
+          esl: {{ eq.sub_location_id }},
+          elat: {{ eq.equip_latitude }},
+          elng: {{ eq.equip_longitude }},
+          eicon: "{% for eqp in equip %}{% if eqp.equipment_id == eq.equipment_id %}{{ eqp.equip_icon_image_name }}{% endif %}{% endfor %}?v={{ timestamp }}",
+          ename: "{% for eqp in equip %}{% if eqp.equipment_id == eq.equipment_id %}{{ eqp.equipment_name }}{% endif %}{% endfor %}"
+        },
+        {% endfor %}
+      ];
+      const filteredEquipment = equipments.filter(eq => eq.esl === selectedSubId);
+      filteredEquipment.forEach(eb => {
+        const myIcon = L.icon({
+          iconUrl: eb.eicon,
+          iconSize: [40, 40]
+        });
+        const equipmentmarker = L.marker([eb.elat, eb.elng], { icon: myIcon }).addTo(map);
+        equipmentmarkers.push(equipmentmarker);
+      });
+      drawEquipmentLine(filteredEquipment);
+    });
+  </script>
+</div>
+{% endblock %}
