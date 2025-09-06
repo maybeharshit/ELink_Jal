@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}My Account{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'jal/css/upper.css' %}">
+<div class="upper">
+    <div class="top-row">
+        <div class="img">
+            <img src="{% static 'jal/images/full_logo.png' %}" alt="Logo">
+        </div>
+        <div class="page-title">
+            <h2 style='color: #1175B7;'>My Account</h2>
+        </div>
+        <div class="account-dropdown">
+    <button><img src="{% static 'jal/images/icon.png' %}" alt="Account Icon"></button>
+    <div class="account-dropdown-content">
+        <a href="{% url 'accountdetails' %}">My Profile</a>
+        <a href="{% url 'changepassword' %}">Change Password</a>
+        <a href="{% url 'Log_out' %}">Logout</a>
+    </div>
+</div>
+    </div>
+</div>
+<hr>
+<div class="form-wrapper operator-form">
+<form method="POST" action="{% url 'locations' %}">
+    {% csrf_token %}
+    <div class="form-grid">
+        <div>
+            <label for="emailid" >Email-ID:<span class="required-field"></span></label>
+        </div>
+        <div>
+            <input type="text" id="emailid" name="emailid" style="width: 225px;" placeholder="{{user_id.email_id}}"
+                disabled>
+        </div>
+        <div>
+            <label for="usern">Username:<span class="required-field"></span></label>
+        </div>
+        <div>
+            <input type="text" id="usern" name="usern" style="width: 225px;" placeholder="{{user_id.user_name}}" disabled required>
+        </div>
+        <div>
+            <label for="password">Password:<span class="required-field"></span></label>
+        </div>
+        <div>
+            <input type="text" id="password" name="password" style="width: 225px;" placeholder="***********" disabled required>
+        </div>
+        <div>
+            <label for="firstn">First Name:<span class="required-field"></span></label>
+        </div>
+        <div>
+            <input type="text" id="firstn" name="firstn" style="width: 225px;" placeholder="{{user_id.first_name}}"
+                disabled>
+        </div>
+        <div>
+            <label for="lastn" >Last Name:<span class="required-field"></span></label>
+        </div>
+        <div>
+            <input type="text" id="lastn" name="lastn" placeholder="{{user_id.last_name}}" disabled
+                style="width: 225px;">
+        </div>
+        <div>
+            <label for="gender">Gender:<span class="required-field"></span></label>
+        </div>
+        <div>
+            <input type="text" id="emailid" name="emailid" style="width: 225px;" placeholder="{{user_id.gender}}"
+                disabled>
+        </div>
+        <div><label for="mobno">Mobile Number:<span class="required-field"></span></label></div>
+        <div>
+            <input type="tel" id="mobno" name="mobno" style="width: 225px;"
+                placeholder="{{user_id.primary_mobile_number}}" disabled>
+        </div>
+        <div><label for="location">Location:<span class="required-field"></span></label></div>
+        <div>
+            <input type="text"  style="width: 225px;" placeholder="{{loc.location_name}}" disabled>
+        </div>
+        <div><label for="sub_location">Sub Location:<span class="required-field"></span></label></div>
+        <div>
+            <select name="sub_location" id="sub_location" style="width: 230px;" required>
+                {% for sl in sls %}
+                <option disabled selected>{{sl.sub_location_name }}</option> 
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+    <hr style="height: 1px; background-color: black;">
+</form>
+</div>
+{% endblock %}

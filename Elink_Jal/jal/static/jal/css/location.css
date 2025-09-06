@@ -1,0 +1,28 @@
+body {
+    background-color: white;
+}
+
+
+
+
+.required-field::before {
+    content: "*";
+    color: red;
+}
+
+.img {
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+    padding-top: 20px;
+    width: fit-content;
+}
+
+.head1 {
+    background-color: #CEFEFF;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    margin-left: 60px;  /* Account for collapsed sidebar */
+}
